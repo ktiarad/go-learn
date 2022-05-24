@@ -18,13 +18,14 @@ type User struct {
 func (u *User) BeforeCreate(db *gorm.DB) (err error) {
 	fmt.Println("Before insert to table users")
 	if len(u.Email) < 10 {
-		err = fmt.Errorf("you email is too short")
+		err = fmt.Errorf("your email is too short")
 	}
-	err = nil
+	// err = nil
 	return err
 }
 
 func (u *User) Print() {
 	fmt.Println("ID :", u.ID)
 	fmt.Println("Email :", u.Email)
+	fmt.Println("Product :", u.Products)
 }

@@ -10,15 +10,15 @@ import (
 )
 
 const (
-	DB_HOST = ""
-	DB_PORT = ""
-	DB_USER = ""
-	DB_PASS = ""
-	DB_NAME = ""
+	DB_HOST = "localhost"
+	DB_PORT = 5432
+	DB_USER = "ktiarad"
+	DB_PASS = "123456"
+	DB_NAME = "learn_postgres"
 )
 
 func StartDb() *gorm.DB {
-	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", DB_HOST, DB_PORT, DB_USER, DB_PASS, DB_NAME)
+	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", DB_HOST, DB_PORT, DB_USER, DB_PASS, DB_NAME)
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {

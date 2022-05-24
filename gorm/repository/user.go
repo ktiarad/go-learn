@@ -10,6 +10,8 @@ type UserRepo interface {
 	CreateUser(*models.User) error
 	GetAllUsers() (*[]models.User, error)
 	GetUserById(id uint) (*models.User, error)
+	UpdateUserById(id uint, email string) (*models.User, error)
+	DeleteUserById(id uint) error
 }
 
 type userRepo struct {
@@ -37,4 +39,19 @@ func (r *userRepo) GetUserById(id uint) (*models.User, error) {
 
 	err := r.db.First(&user, "id=?", id).Error
 	return &user, err
+}
+
+func (r *userRepo) UpdateUserById(id uint, email string) (*models.User, error) {
+	var user models.User
+
+	err := r.db.Where("id = ?", id).Updates(models.User{Email: email}).Error
+	return &user, err
+}
+
+func (r *userRepo) DeleteUserById(id uint) error {
+	var user models.User
+
+	err := r.db.Where("id = ?", id).Delete(&user).Error
+
+	return err
 }

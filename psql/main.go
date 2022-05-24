@@ -19,9 +19,9 @@ type Employee struct {
 const (
 	DB_HOST = "localhost"
 	DB_PORT = 5432
-	DB_USER = "postgres"
-	DB_PASS = ""
-	DB_NAME = "db_go_sql"
+	DB_USER = "ktiarad"
+	DB_PASS = "123456"
+	DB_NAME = "learn_postgres"
 )
 
 var db *sql.DB
@@ -32,33 +32,49 @@ func main() {
 		panic(err)
 	}
 
-	// create employee
-	emp := Employee{
-		Email:    "naruto@konoha.com",
-		FullName: "Uzumaki Naruto",
-		Age:      21,
-		Division: "Developer",
-	}
+	// CREATE EMPLOYEE
+	// emp := Employee{
+	// 	Email:    "naruto@konoha.com",
+	// 	FullName: "Uzumaki Naruto",
+	// 	Age:      21,
+	// 	Division: "Developer",
+	// }
 
-	err = createEmployee(db, &emp)
+	// err = createEmployee(db, &emp)
+	// if err != nil {
+	// 	fmt.Println("error :", err.Error())
+	// }
+
+	// UPDATE EMPLOYEE
+	// err = updateEmployee(db)
+	// if err != nil {
+	// 	fmt.Println("error :", err)
+	// 	return
+	// }
+
+	// GET EMPLOYEE BY ID
+	// employee, err := getEmployeeById(db, 2)
+	// if err != nil {
+	// 	fmt.Println("error:", err.Error())
+	// }
+	// employee.Print()
+
+	// DELETE EMPLOYEE BY ID
+	err = deleteEmployeeById(db, 1)
 	if err != nil {
-		fmt.Println("error :", err.Error())
+		fmt.Println("error :", err)
+		return
 	}
 
+	// GET ALL EMPLOYEES
 	employees, err := getallEmployees(db)
 	if err != nil {
-
+		fmt.Println("error :", err)
+		return
 	}
 	for _, employee := range *employees {
 		employee.Print()
 	}
-
-	// Get Employee by id = 2
-	employee, err := getEmployeeById(db, 2)
-	if err != nil {
-		fmt.Println("error:", err.Error())
-	}
-	employee.Print()
 
 }
 
@@ -178,4 +194,59 @@ func getEmployeeById(db *sql.DB, id int) (*Employee, error) {
 		return nil, err
 	}
 	return &emp, nil
+}
+
+func updateEmployee(db *sql.DB) error {
+	query := `
+		UPDATE employees
+		SET full_name = $2, email = $3, division = $4, age = $5
+		WHERE id = $1
+	`
+	stmt, err := db.Prepare(query)
+	if err != nil {
+		return err
+	}
+
+	defer stmt.Close()
+
+	res, err := db.Exec(query, 1, "Uchiha Sasuke", "sasuke@konoha.com", "Product Manager", 30)
+	if err != nil {
+		return err
+	}
+
+	count, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("Total updated data:", count)
+
+	return nil
+
+}
+
+func deleteEmployeeById(db *sql.DB, id int) error {
+	query := `
+		DELETE FROM employees
+		WHERE id = $1
+	`
+
+	stmt, err := db.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	res, err := db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+
+	count, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Data with id %d has been deleted, %d rows affected\n", id, count)
+	return nil
 }
